@@ -22,6 +22,21 @@ resource "google_cloud_run_v2_service" "service" {
         value = var.service_name
       }
 
+      env {
+        name  = "GOOGLE_CLOUD_PROJECT"
+        value = "spotgenai"
+      }
+
+      env {
+        name  = "VERTEX_LOCATION"
+        value = "us-central1"
+      }
+
+      env {
+        name  = "REASONING_ENGINE_ID"
+        value = "5664318868441530368"
+      }
+
       resources {
         limits = {
           cpu    = "1"
