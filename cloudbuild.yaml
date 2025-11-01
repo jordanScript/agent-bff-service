@@ -1,0 +1,21 @@
+# Build and push image to Artifact Registry
+# Usage:
+#   gcloud builds submit --config=cloudbuild.yaml --substitutions=_REGION=southamerica-west1,_REPO=fastapi-cr,_SERVICE=fastapi-service
+# Image will be: ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:latest
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'build'
+  - '-t'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:latest'
+  - '.'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+  - 'push'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:latest'
+substitutions:
+  _REGION: 'southamerica-west1'
+  _REPO: 'fastapi-cr'
+  _SERVICE: 'fastapi-service'
+images:
+- '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:latest'
