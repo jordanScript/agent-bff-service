@@ -8,6 +8,7 @@ resource "google_project_service" "apis" {
     "logging.googleapis.com",
     "monitoring.googleapis.com",
     "cloudresourcemanager.googleapis.com",
+    "speech.googleapis.com",  # Speech-to-Text API
   ])
   project = var.project_id
   service = each.value

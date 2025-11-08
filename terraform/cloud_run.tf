@@ -37,6 +37,21 @@ resource "google_cloud_run_v2_service" "service" {
         value = "5664318868441530368"
       }
 
+      env {
+        name  = "WHATSAPP_TOKEN"
+        value = "EAAP3xrWu1p8BP2iLgTZBM1haUgx6W2yQsWSubZAU3pV4SjnKD59mz5k1BxaOhRCLXuLTqK6Nuzos5lZBuw5o5Sf8cURDeyUkVAWuZCZA1sDix9VIujfDbIMBqjZAo9pFMWS9FNxzX8y1GuaaMwEGdzKwZAyZCxHkZA8YstWaX0BApZACWZB4qZA3lQBpKomYZAesIkkO3UhM0hZAlVmhpHmxHdI67bZA4i1BeBhN5dQMuI8sV42n1ZBUf5Qi2EeZCKBAi3QZBQ2ldyFeTA15fZBrS5zNqnjJqGr"
+      }
+
+      env {
+        name  = "WHATSAPP_PHONE_NUMBER_ID"
+        value = "883518508167909"
+      }
+
+      env {
+        name  = "WHATSAPP_VERIFY_TOKEN"
+        value = "mi_token_secreto_12345"
+      }
+
       resources {
         limits = {
           cpu    = "1"
