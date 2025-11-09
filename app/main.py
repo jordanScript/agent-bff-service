@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Agent BFF Service",
-    version="1.0.0",
-    description="Backend for Frontend service para comunicación con Vertex AI Agent"
+    version="1.0.1",
+    description="Backend for Frontend service para comunicación con Vertex AI Agent - CI/CD with WIF enabled"
 )
 
 # Configurar CORS
