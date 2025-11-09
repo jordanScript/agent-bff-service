@@ -32,7 +32,7 @@ app.add_middleware(
 # Configuración del agente
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "spotgenai")
 LOCATION = os.getenv("VERTEX_LOCATION", "us-central1")
-REASONING_ENGINE_ID = os.getenv("REASONING_ENGINE_ID", "8724611572263026688")
+REASONING_ENGINE_ID = os.getenv("REASONING_ENGINE_ID")
 
 # Configuración de WhatsApp
 WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
