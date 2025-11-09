@@ -71,7 +71,7 @@ jobs:
             --cpu=1 \
             --port=8080 \
             --timeout=300 \
-            --set-env-vars="SERVICE_NAME=${{ env.SERVICE_NAME }},PROJECT_ID=${{ env.PROJECT_ID }},GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }},VERTEX_LOCATION=${{ vars.VERTEX_LOCATION }},REASONING_ENGINE_ID=${{ secrets.REASONING_ENGINE_ID }}"
+            --set-env-vars="SERVICE_NAME=${{ env.SERVICE_NAME }},PROJECT_ID=${{ env.PROJECT_ID }},GOOGLE_CLOUD_PROJECT=${{ env.PROJECT_ID }},VERTEX_LOCATION=${{ vars.VERTEX_LOCATION }},REASONING_ENGINE_ID=${{ secrets.REASONING_ENGINE_ID }},WHATSAPP_TOKEN=${{ secrets.WHATSAPP_TOKEN }},WHATSAPP_PHONE_NUMBER_ID=${{ secrets.WHATSAPP_PHONE_NUMBER_ID }},WHATSAPP_VERIFY_TOKEN=${{ secrets.WHATSAPP_VERIFY_TOKEN }}"
 
       - name: Get Service URL
         run: |
