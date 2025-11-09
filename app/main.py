@@ -197,7 +197,7 @@ async def chat(message: ChatMessage):
 @app.post("/query")
 async def query_agent(request: QueryRequest):
     """
-    Endpoint genérico para consultas al agente con contexto adicional.
+    Endpoint genérico para consultas al agente usando streamQuery.
     """
     try:
         logger.info(f"Received query: {request.query[:50]}...")
@@ -211,12 +211,15 @@ async def query_agent(request: QueryRequest):
         if request.context:
             input_data.update(request.context)
         
-        # Preparar el payload
-        payload = {"input": input_data}
+        # Preparar el payload para streamQuery usando class_method
+        payload = {
+            "class_method": "async_stream_query",
+            "input": input_data
+        }
         
-        # Ejecutar la consulta
-        logger.info(f"Querying reasoning engine with context")
-        query_url = f"{BASE_API_URL}:query"
+        # Ejecutar la consulta usando streamQuery
+        logger.info(f"Querying reasoning engine with streamQuery")
+        query_url = f"{BASE_API_URL}:streamQuery"
         response = requests.post(
             query_url,
             json=payload,
@@ -227,9 +230,15 @@ async def query_agent(request: QueryRequest):
         response.raise_for_status()
         result = response.json()
         
+        # Extraer la respuesta del formato de streaming
+        if "output" in result:
+            response_text = result["output"]
+        else:
+            response_text = result
+        
         return {
             "success": True,
-            "response": result
+            "response": response_text
         }
         
     except requests.exceptions.HTTPError as e:

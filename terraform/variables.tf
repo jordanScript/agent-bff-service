@@ -25,3 +25,15 @@ variable "container_image" {
   description = "Ruta completa de la imagen a desplegar (e.g., us-central1-docker.pkg.dev/PROJECT/REPO/SERVICE:latest)"
   type        = string
 }
+
+variable "github_repository" {
+  description = "GitHub repository in format 'owner/repo'"
+  type        = string
+  default     = "jordanScript/agent-bff-service"
+}
+
+variable "github_branches" {
+  description = "Branches allowed to deploy"
+  type        = list(string)
+  default     = ["main", "master"]
+}
