@@ -624,3 +624,98 @@ async def delete_whatsapp_session(phone_number: str):
         return {"status": "deleted", "phone_number": phone_number}
     else:
         raise HTTPException(status_code=404, detail="Session not found")
+
+# ==================== Dialogflow CX Integration ====================
+
+@app.post("/dialogflow/webhook")
+async def dialogflow_webhook(request: FastAPIRequest):
+    """
+    Webhook para recibir mensajes desde Dialogflow CX y pasarlos al Agente Vertex AI.
+    """
+    try:
+        body = await request.json()
+        logger.info(f"🤖 Dialogflow Request: {body}")
+
+        # 1. Extraer información clave del request de Dialogflow
+        # El texto del usuario suele venir en 'text' o dentro de 'intentInfo'
+        user_text = body.get("text")
+        if not user_text:
+            # Intento alternativo de sacar el texto
+            user_text = body.get("transcript")
+        
+        # El session_id de Dialogflow es largo (projects/.../sessions/UUID)
+        # Usaremos el último segmento como ID para nuestro agente
+        full_session = body.get("sessionInfo", {}).get("session", "")
+        dialogflow_session_id = full_session.split("/")[-1] if full_session else "default_df_session"
+
+        logger.info(f"💬 Dialogflow User: {dialogflow_session_id} says: {user_text}")
+
+        if not user_text:
+            return {
+                "fulfillment_response": {
+                    "messages": [{"text": {"text": ["No entendí lo que dijiste (texto vacío)."]}}]
+                }
+            }
+
+        # 2. Reutilizar la lógica para hablar con el Agente Vertex AI
+        # (Usamos una lógica similar a process_whatsapp_message)
+        
+        # A. Obtener o crear sesión en Vertex AI
+        # Usamos un prefijo 'df_' para distinguir estas sesiones
+        vertex_session_id = get_or_create_whatsapp_session(f"df_{dialogflow_session_id}")
+        
+        # B. Preparar headers
+        headers = get_auth_headers()
+
+        # C. Enviar al Reasoning Engine
+        stream_query_url = f"{BASE_API_URL}:streamQuery?alt=sse"
+        
+        payload = {
+            "class_method": "async_stream_query",
+            "input": {
+                "user_id": f"df_{dialogflow_session_id}",
+                "session_id": vertex_session_id,
+                "message": user_text
+            }
+        }
+
+        response = requests.post(
+            stream_query_url,
+            json=payload,
+            headers=headers,
+            timeout=60
+        )
+        response.raise_for_status()
+        result = response.json()
+
+        # D. Extraer respuesta
+        agent_response = result.get("content", {}).get("parts", [{}])[0].get("text", "Error procesando respuesta.")
+
+        # 3. Formatear respuesta para Dialogflow CX
+        # Dialogflow espera un JSON específico con 'fulfillment_response'
+        return {
+            "fulfillment_response": {
+                "messages": [
+                    {
+                        "text": {
+                            "text": [agent_response]
+                        }
+                    }
+                ]
+            }
+        }
+
+    except Exception as e:
+        logger.error(f"❌ Error en Dialogflow Webhook: {str(e)}", exc_info=True)
+        # Devolver un mensaje de error amigable al chat de Dialogflow
+        return {
+            "fulfillment_response": {
+                "messages": [
+                    {
+                        "text": {
+                            "text": ["Lo siento, tuve un problema interno conectando con el agente."]
+                        }
+                    }
+                ]
+            }
+        }
